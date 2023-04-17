@@ -1,0 +1,85 @@
+*&---------------------------------------------------------------------*
+*& Report  Z_YUENTATSHINGBILLY_DP                                      *
+*&                                                                     *
+*&---------------------------------------------------------------------*
+*&                                                                     *
+*&                                                                     *
+*&---------------------------------------------------------------------*
+
+REPORT  Z_YUENTATSHINGBILLY_DP                  .
+
+TABLES ZASG_210347150.
+
+SELECTION-SCREEN BEGIN OF BLOCK rad1 WITH FRAME TITLE comm1.
+PARAMETERS: r1 RADIOBUTTON GROUP rad1,
+r2 RADIOBUTTON GROUP rad1 DEFAULT 'X'.
+
+SELECT-OPTIONS alc FOR ZASG_210347150-CURRENCY NO INTERVALS NO-EXTENSION
+ DEFAULT 'USD' .
+
+SELECT-OPTIONS am_lc FOR ZASG_210347150-HKEARNING DEFAULT 1 TO '9999.90'
+.
+
+SELECT-OPTIONS airline FOR ZASG_210347150-CARRID DEFAULT 'AA' TO 'UA'.
+
+SELECT-OPTIONS planetp FOR ZASG_210347150-PLANETYPE DEFAULT '747-400'.
+
+SELECTION-SCREEN END OF BLOCK rad1.
+
+
+
+
+TYPES:BEGIN OF ty_wa,
+HK_EARNING TYPE ZASG_210347150-HKEARNING,
+CARR_ID TYPE ZASG_210347150-CARRID,
+CONN_ID TYPE ZASG_210347150-CONNID,
+CUSTOMER_ID TYPE ZASG_210347150-CUSTOMID,
+CARRNAME TYPE ZASG_210347150-CARRNAME,
+FLTIME TYPE ZASG_210347150-FLTIME,
+PLANETYPE TYPE ZASG_210347150-planetype,
+END OF ty_wa.
+
+DATA: itab1 TYPE TABLE OF ty_wa,
+wa1 TYPE ty_wa, FLAG_STAT TYPE FLAG, HKEARNING_STRING TYPE STRING.
+
+IF r1 EQ 'X'.
+
+SY-TVAR0  = 'set'.
+FLAG_STAT = 'X'.
+ELSE.
+
+SY-TVAR0  = 'not set'.
+ FLAG_STAT = ''.
+
+ENDIF.
+
+SELECT zasg~HKEARNING zasg~CARRID
+zasg~CONNID zasg~CUSTOMID zasg~CARRNAME
+zasg~FLTIME zasg~planetype
+FROM ZASG_210347150 as zasg INTO TABLE itab1
+WHERE zasg~H_FLAG = FLAG_STAT
+ AND zasg~CURRENCY IN alc
+ AND zasg~HKEARNING IN am_lc
+ AND zasg~CARRID IN airline
+ AND zasg~PLANETYPE IN planetp.
+
+ SORT itab1 BY FLTIME CONN_ID CUSTOMER_ID.
+
+
+LOOP AT itab1 INTO wa1.
+HKEARNING_STRING = wa1-HK_EARNING.
+
+SHIFT wa1-customer_id LEFT DELETING LEADING '0'.
+
+WRITE: / 'Plane Type:', 20 wa1-planetype LEFT-JUSTIFIED.
+WRITE: / 'Flight Time:', 20 wa1-fltime LEFT-JUSTIFIED.
+WRITE: / 'Airline:', 20 wa1-carrname LEFT-JUSTIFIED.
+WRITE: / 'Flight No:', 20 wa1-conn_id LEFT-JUSTIFIED.
+WRITE: / 'Customer Number:' ,20 wa1-customer_id LEFT-JUSTIFIED.
+WRITE: / 'Earning in HK$:',20 HKEARNING_STRING LEFT-JUSTIFIED.
+ULINE.
+ENDLOOP.
+
+INITIALIZATION.
+
+comm1 = 'Select Options'.

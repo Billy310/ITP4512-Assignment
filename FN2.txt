@@ -1,0 +1,33 @@
+FUNCTION Z_YUENTATSHINGBILLY_FN2.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     REFERENCE(I_WTUNIT) TYPE  S_WEIUNIT
+*"     REFERENCE(I_LWEIGHT) TYPE  S_LUGWEIGH
+*"  EXPORTING
+*"     REFERENCE(O_LGWEIGHT) TYPE  S_LUGWEIGH
+*"----------------------------------------------------------------------
+
+DATA:
+wtunit type S_WEIUNIT,
+outputunit type f,
+stable type f.
+
+stable = '2.2'.
+
+wtunit = I_WTUNIT.
+
+IF I_WTUNIT EQ 'KG'.
+
+O_LGWEIGHT = I_LWEIGHT.
+
+ELSE.
+
+O_LGWEIGHT = I_LWEIGHT / stable.
+
+ENDIF.
+
+
+
+
+ENDFUNCTION.

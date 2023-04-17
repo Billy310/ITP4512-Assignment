@@ -1,0 +1,49 @@
+FUNCTION Z_YUENTATSHINGBILLY_FN1.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     REFERENCE(I_CURRENCY) TYPE  S_CURRCODE
+*"     REFERENCE(I_EARNING) TYPE  S_L_CUR_PR
+*"  EXPORTING
+*"     REFERENCE(O_EARNING) TYPE  S_L_CUR_PR
+*"  EXCEPTIONS
+*"      INCORRECT_INPUT
+*"      NOTSUPPORT_VALUE
+*"----------------------------------------------------------------------
+DATA: usd TYPE f,
+eur TYPE f,
+aud TYPE f,
+sgd TYPE f,
+jpy TYPE f,
+original_earning TYPE f.
+
+usd = '7.2'.
+eur = '8.4'.
+aud = '5.2'.
+sgd = '5.6'.
+jpy = '0.07'.
+original_earning = I_EARNING.
+
+IF I_EARNING > 0.
+
+IF I_CURRENCY EQ 'USD'.
+O_EARNING = original_earning * usd .
+ELSEIF I_CURRENCY EQ 'EUR'.
+O_EARNING = original_earning * eur .
+ELSEIF I_CURRENCY EQ 'AUD'.
+O_EARNING = original_earning * aud .
+ELSEIF I_CURRENCY EQ 'SGD'.
+O_EARNING = original_earning * sgd .
+ELSEIF I_CURRENCY EQ 'JPY'.
+O_EARNING = original_earning * jpy .
+ELSE.
+RAISE incorrect_input.
+ENDIF.
+
+ELSE.
+RAISE NOTSUPPORT_VALUE.
+ENDIF.
+
+
+
+ENDFUNCTION.
